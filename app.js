@@ -9,4 +9,8 @@ app.post('/createTest', (req, res) => {
     res.send(`Your teacher has scheduled ${testDetails.subject} on ${testDetails.date}`)
 })
 
+app.post('/login', (req, res) => {
+    
+})
+
 app.listen(3000, ()=> console.log('Server started at 3000'))
