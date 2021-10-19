@@ -5,8 +5,7 @@ app.use(express.json())
 
 app.post('/createTest', (req, res) => {
     let testDetails = req.body
-    
-    res.send(`Your teacher has scheduled ${testDetails.subject} on ${testDetails.date}`)
+    console.log(`${JSON.stringify(req.body)}`)
 })
 
 app.post('/login', (req, res) => {
