@@ -1,3 +1,5 @@
+CREATE DATABASE IF NOT EXISTS onlineexaminationsystem;
+
 CREATE TABLE IF NOT EXISTS `class` (
   `class_id` int NOT NULL AUTO_INCREMENT,
   `class_std` varchar(45) NOT NULL,
