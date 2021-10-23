@@ -17,7 +17,7 @@ const teachSubClass = dbc.define('teach_sub_class', {
 })
 
 teacherModel.belongsToMany(subjectModel, { through: teachSubClass })
-classModel.belongsToMany(teacherModel, {throughL teachSubClass })
+classModel.belongsToMany(teacherModel, {through: teachSubClass })
 
 export default teachSubClass
 
