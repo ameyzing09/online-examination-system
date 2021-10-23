@@ -1,8 +1,9 @@
 import express from 'express'
 import cors from 'cors'
 import dbc from './database'
-import studentModel from './student'
-import classModel from './class'
+import studentModel from './model/student'
+import classModel from './model/class'
+
 let app = express()
 
 app.use(express.json())
@@ -13,39 +14,10 @@ dbc.authenticate()
     .then(() => console.log('Database connection successful'))
     .catch(err => console.log(err))
 
-// Student Registration API
-app.post('/studentRegistration', async (req, res) => {
-    /* Finding all available class std and div to get the class id from the
-    class table to enter in the student table.*/
-    let classDetails = await classModel.findAll({
-        where: {
-            class_std: req.body.requestBody.classStd,
-            class_div: req.body.requestBody.classDiv
-        }
-    })
-
-    // Above function returns the class_id
-    let classId = classDetails[0].dataValues.class_id
-
-    // Inserting record in the student table
-    studentModel.create({
-        student_fname: req.body.requestBody.studentFname,
-        student_mname: req.body.requestBody.studentMname,
-        student_lname: req.body.requestBody.studentLname,
-        c_id: classId
-    })
-    let successResponse = {
-        transaction: "success"
-    }
-    
-    // Sending response
-    res.status(200).json(successResponse)
-})
-
 app.get('/getClass', async(req, res) => {
     // select * from class;
     let classDetails = await classModel.findAll()
-    console.log(classDetails)
+    // console.log(classDetails)
     let responseClassStdArray = []
     let responseClassDivArray = []
     // Class details are stored in different array
@@ -73,5 +45,45 @@ app.get('/getClass', async(req, res) => {
     res.status(200).json(successResponse)
 })
 
+// Student Registration API
+app.post('/studentRegistration', async (req, res) => {
+    /* Finding all available class std and div to get the class id from the
+    class table to enter in the student table.*/
+    let classDetails = await classModel.findAll({
+        where: {
+            class_std: req.body.requestBody.classStd,
+            class_div: req.body.requestBody.classDiv
+        }
+    })
+
+    // Above function returns the class_id
+    let classId = classDetails[0].dataValues.class_id
+
+    // Inserting record in the student table
+    studentModel.create({
+        student_fname: req.body.requestBody.studentFname,
+        student_mname: req.body.requestBody.studentMname,
+        student_lname: req.body.requestBody.studentLname,
+        c_id: classId
+    })
+
+    let successResponse = {
+        transaction: "success"
+    }
+    
+    // Sending response
+    res.status(200).json(successResponse)
+})
+
+app.post('/admin/addTeacher', (req, res) => {
+    let teacherUserId = req.body.fname.toLowerCase()+'.'+req.body.lname.toLowerCase()
+    let teacherPassword = req.body.fname.toLowerCase()
+    let teacherFname = req.body.fname
+    let teacherLname = req.body.lname
+
+    let successResponse = {}
+    res.status(200).json(successResponse)
+})
 
 app.listen(3000, ()=> console.log('Server started at 3000'))
+
