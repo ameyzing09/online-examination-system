@@ -1,8 +1,12 @@
+import { Op } from 'sequelize'
 import express from 'express'
 import cors from 'cors'
 import dbc from './database'
+import classServices from './services/classServices'
 import studentModel from './model/student'
+import subjectModel from './model/subject'
 import classModel from './model/class'
+import teacherModel from './model/teacher'
 
 let app = express()
 
@@ -15,33 +19,7 @@ dbc.authenticate()
     .catch(err => console.log(err))
 
 app.get('/getClass', async(req, res) => {
-    // select * from class;
-    let classDetails = await classModel.findAll()
-    // console.log(classDetails)
-    let responseClassStdArray = []
-    let responseClassDivArray = []
-    // Class details are stored in different array
-    for(let i=0; i<classDetails.length; i++) {
-        responseClassStdArray[i] = classDetails[i].dataValues.class_std // [9, 9, 10, 10]
-        responseClassDivArray[i] = classDetails[i].dataValues.class_div
-    }
-
-    // Filtering out duplicate values
-    let responseClassStd = responseClassStdArray.filter( (item, index) => {
-        if(responseClassStdArray.lastIndexOf(item) == index)
-            return item
-    })
-
-    // Filtering out duplicate values
-    let responseClassDiv = responseClassDivArray.filter( (item, index) => {
-        if(responseClassDivArray.lastIndexOf(item) == index)
-            return item
-    })
-
-    let successResponse = {
-        classStd: responseClassStd,
-        classDiv: responseClassDiv
-    }
+    let successResponse = await classServices.getClassDetails()
     res.status(200).json(successResponse)
 })
 
@@ -75,13 +53,40 @@ app.post('/studentRegistration', async (req, res) => {
     res.status(200).json(successResponse)
 })
 
-app.post('/admin/addTeacher', (req, res) => {
+app.post('/admin/addTeacher', async(req, res) => {
     let teacherUserId = req.body.fname.toLowerCase()+'.'+req.body.lname.toLowerCase()
     let teacherPassword = req.body.fname.toLowerCase()
     let teacherFname = req.body.fname
     let teacherLname = req.body.lname
 
-    let successResponse = {}
+    let subjectArray = []
+    for( let i in req.body.subject ) {
+        subjectArray.push(req.body.subject[i])
+    }
+
+    // select id from subject where subject_name='Java' or subject_name='Angular';
+    let subjectDetails = await subjectModel.findAll({
+        attributes: [
+            'subject_id'
+        ],
+        where: {
+            subject_name: {
+                [Op.or] : [...subjectArray]
+            }            
+        }
+    })
+
+    let classDetails = await classServices.getClassId(req.body.class)
+    // teacherModel.create({
+    //     teacher_fname: teacherFname,
+    //     teacher_lname: teacherLname,
+    //     teacher_user_name: teacherUserId,
+    //     teacher_password: teacherPassword
+    // })
+
+    let successResponse = {
+        transaction: "success"
+    }
     res.status(200).json(successResponse)
 })
 

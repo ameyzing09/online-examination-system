@@ -12,6 +12,9 @@ const Subject = dbc.define('subject', {
         type: Sequelize.STRING,
         allowNull: false
     }
+}, {
+    freezeTableName: true,
+    timestamps: false
 })
 
 export default Subject
