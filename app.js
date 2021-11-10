@@ -7,6 +7,7 @@ import studentModel from './model/student'
 import subjectModel from './model/subject'
 import classModel from './model/class'
 import teacherModel from './model/teacher'
+import teacherSubClass from './model/teachSubClass'
 
 let app = express()
 
@@ -21,6 +22,14 @@ dbc.authenticate()
 app.get('/getClass', async(req, res) => {
     let successResponse = await classServices.getClassDetails()
     res.status(200).json(successResponse)
+})
+
+app.post('/getClassId', async(req, res) => {
+    let classStd = req.body.classStd
+    let classDiv = req.body.classDiv
+
+    let classId = await classServices.getClassId(classStd, classDiv)
+    res.status(200).json({ classId })
 })
 
 // Student Registration API
@@ -58,32 +67,55 @@ app.post('/admin/addTeacher', async(req, res) => {
     let teacherPassword = req.body.fname.toLowerCase()
     let teacherFname = req.body.fname
     let teacherLname = req.body.lname
+    let flag = true
+    if(req.body.subject.length != req.body.class.length)
+        flag = false
 
+    let subjectDetails
     let subjectArray = []
-    for( let i in req.body.subject ) {
-        subjectArray.push(req.body.subject[i])
+    if(flag){
+        for( let i in req.body.subject ) {
+            subjectArray.push(req.body.subject[i])
+        }
+        // select id from subject where subject_name='Java' or subject_name='Angular';
+        subjectDetails = await subjectModel.findAll({
+            attributes: [
+                'subject_id'
+            ],
+            where: {
+                subject_name: {
+                    [Op.or] : [...subjectArray]
+                }            
+            }
+        })
     }
+    console.log('app.js || subjectDetails : ', subjectDetails)
 
-    // select id from subject where subject_name='Java' or subject_name='Angular';
-    let subjectDetails = await subjectModel.findAll({
-        attributes: [
-            'subject_id'
-        ],
-        where: {
-            subject_name: {
-                [Op.or] : [...subjectArray]
-            }            
+    const [ teacher, created ] = await teacherModel.findOrCreate({
+        where : {
+            teacher_fname: teacherFname,
+            teacher_lname: teacherLname
+        },
+        defaults: {
+            teacher_user_name: teacherUserId,
+            teacher_password: teacherPassword
         }
     })
 
-    let classDetails = await classServices.getClassId(req.body.class)
-    // teacherModel.create({
-    //     teacher_fname: teacherFname,
-    //     teacher_lname: teacherLname,
-    //     teacher_user_name: teacherUserId,
-    //     teacher_password: teacherPassword
-    // })
+    console.log('app.js || teacher id : ', teacher.dataValues.teacher_id)
 
+    let teacherData = []
+
+    for( let i=0; i<subjectArray.length; ++i ){
+        teacherData.push({ 
+            "tsd_teacher_id": teacher.dataValues.teacher_id, 
+            "tsd_subject_id": subjectDetails[i].dataValues.subject_id,
+            "tsd_class_id": req.body.class[i]
+        })
+    }
+
+    console.log('app.js || teach_sub_class : ', ...teacherData)
+    teacherSubClass.bulkCreate(teacherData)
     let successResponse = {
         transaction: "success"
     }

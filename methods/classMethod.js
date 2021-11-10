@@ -1,26 +1,30 @@
 import Sequelize from 'sequelize'
+import { Op } from 'sequelize'
 import classModel from '../model/class'
 
 let classMethod = {
     getAllClass: async() => {
         try{
             return await classModel.findAll()
-        } catch { (err => console.log(err)) }
+        } catch(err) {
+            console.log("classMethod.js || error ", err)
+        }
     },
-    getClassId: async(classInfo) => {
+    getClassIdMethod: async(std, div) => {
         try{
-            return await classModel.findAll({
-                attribute:[ 
-                    'class_id'
-                ],
+            return await classModel.findOne({
+                where: {
                 [Op.and] : [
-                    { 
-                        class_std: classInfo.classStd,
-                        class_div: classInfo.classDiv
-                    }
-                ]
+                        { 
+                            class_std: std,
+                            class_div: div
+                        }
+                    ]
+                }
             })
-        } catch { ( err => console.log(err)) }
+        } catch(err) {
+            console.log("classMethod.js || error ", err)
+         }
     }
 }
 

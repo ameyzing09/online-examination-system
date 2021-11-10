@@ -1,7 +1,7 @@
 import classMethod from "../methods/classMethod";
 
 async function getClassDetails() {
-    let classDetails = classMethod.getAllClass()
+    let classDetails = await classMethod.getAllClass()
     let responseClassStdArray = []
     let responseClassDivArray = []
 
@@ -31,12 +31,10 @@ async function getClassDetails() {
     return successResponse
 }
 
-async function getClassId(classDetails) {
-    let classId = []
-    for (let i=0; i<classDetails.length; ++i) {
-        console.log(classDetails[i])
-        let id = await classMethod.getClassId(classDetails[i])
-    }
+async function getClassId(classStd, classDiv) {
+    let id = await classMethod.getClassIdMethod(classStd, classDiv)
+    return id.dataValues.class_id
 }
+
 
 export default { getClassDetails, getClassId }
