@@ -138,5 +138,21 @@ app.put('/admin/:id', async (req, res) => {
     res.status(200).json(successResponse)
 })
 
+// Delete teacher details
+app.delete('/admin/:id', async (req, res) => {
+    let teacherId = req.params.id
+    teacherModel.destroy({
+        where:{
+            teacher_id: teacherId
+        }
+    })
+
+    let successResponse = {
+        transaction: "success"
+    }
+
+    res.status(200).json(successResponse)
+})
+
 app.listen(3000, ()=> console.log('Server started at 3000'))
 
