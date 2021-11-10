@@ -62,6 +62,7 @@ app.post('/studentRegistration', async (req, res) => {
     res.status(200).json(successResponse)
 })
 
+// Create teacher API
 app.post('/admin', async(req, res) => {
     let teacherUserId = req.body.fname.toLowerCase()+'.'+req.body.lname.toLowerCase()
     let teacherPassword = req.body.fname.toLowerCase()
