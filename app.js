@@ -62,7 +62,7 @@ app.post('/studentRegistration', async (req, res) => {
     res.status(200).json(successResponse)
 })
 
-app.post('/admin/addTeacher', async(req, res) => {
+app.post('/admin', async(req, res) => {
     let teacherUserId = req.body.fname.toLowerCase()+'.'+req.body.lname.toLowerCase()
     let teacherPassword = req.body.fname.toLowerCase()
     let teacherFname = req.body.fname
@@ -121,6 +121,7 @@ app.post('/admin/addTeacher', async(req, res) => {
     }
     res.status(200).json(successResponse)
 })
+
 
 app.listen(3000, ()=> console.log('Server started at 3000'))
 
