@@ -28,10 +28,20 @@ app.get('/getTeacherCount', async(req, res) => {
     res.status(200).json(successResponse)
 })
 
+// Get student count API
+app.get('/getStudentCount',async(req, res) => {
+    const studentCount = await studentModel.findAndCountAll()
+    let successResponse = {
+        studentCount: studentCount.count
+    }
+    res.status(200).json(successResponse)
+})
+
 app.get('/getClass', async(req, res) => {
     let successResponse = await classServices.getClassDetails()
     res.status(200).json(successResponse)
 })
+
 
 app.post('/getClassId', async(req, res) => {
     let classStd = req.body.classStd
