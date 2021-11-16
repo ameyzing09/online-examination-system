@@ -19,6 +19,15 @@ dbc.authenticate()
     .then(() => console.log('Database connection successful'))
     .catch(err => console.log(err))
 
+// Get teacher count API
+app.get('/getTeacherCount', async(req, res) => {
+    const teacherCount = await teacherModel.findAndCountAll()
+    let successResponse = {
+        teacherCount: teacherCount.count
+    }
+    res.status(200).json(successResponse)
+})
+
 app.get('/getClass', async(req, res) => {
     let successResponse = await classServices.getClassDetails()
     res.status(200).json(successResponse)
