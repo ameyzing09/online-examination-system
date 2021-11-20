@@ -3,6 +3,7 @@ import express from 'express'
 import cors from 'cors'
 import dbc from './database'
 import classServices from './services/classServices'
+import subjectServices from './services/subjectServices'
 import studentModel from './model/student'
 import subjectModel from './model/subject'
 import classModel from './model/class'
@@ -37,12 +38,19 @@ app.get('/getStudentCount',async(req, res) => {
     res.status(200).json(successResponse)
 })
 
+// Get class details API
 app.get('/getClass', async(req, res) => {
     let successResponse = await classServices.getClassDetails()
     res.status(200).json(successResponse)
 })
 
+// Get subject name API
+app.get('/getSubject', async(req, res) => {
+    let successResponse = await subjectServices.getSubjectName()
+    res.status(200).json(successResponse)
+})
 
+// Get class ID
 app.post('/getClassId', async(req, res) => {
     let classStd = req.body.classStd
     let classDiv = req.body.classDiv

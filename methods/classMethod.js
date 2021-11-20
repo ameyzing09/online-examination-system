@@ -1,4 +1,3 @@
-import Sequelize from 'sequelize'
 import { Op } from 'sequelize'
 import classModel from '../model/class'
 
@@ -7,7 +6,7 @@ let classMethod = {
         try{
             return await classModel.findAll()
         } catch(err) {
-            console.log("classMethod.js || error ", err)
+            console.log("classMethod.js || getAllClass : ", err)
         }
     },
     getClassIdMethod: async(std, div) => {
