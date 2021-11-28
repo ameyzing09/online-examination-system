@@ -150,6 +150,15 @@ app.post('/admin', async(req, res) => {
     res.status(200).json(successResponse)
 })
 
+// Get teacher names API
+app.get('/getTeacher', async (req, res) => {
+    let teacherDetails = await teacherModel.findAll({
+        attributes: [ 'teacher_id', 'teacher_fname', 'teacher_lname' ]
+    })
+    console.log('app.js || /getTeacherDetails ', teacherDetails)
+    res.status(200).json(teacherDetails)
+})
+
 // Edit teacher details API
 app.put('/admin/:id', async (req, res) => {
     let teacherId = req.params.id
@@ -182,5 +191,5 @@ app.delete('/admin/:id', async (req, res) => {
     res.status(200).json(successResponse)
 })
 
-app.listen(3000, ()=> console.log('Server started at 3000'))
+app.listen(process.env.PORT, ()=> console.log(`Server started at ${process.env.PORT}`))
 
