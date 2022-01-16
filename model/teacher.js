@@ -1,6 +1,7 @@
 import Sequelize from 'sequelize'
 import dbc from '../database'
 
+
 const Teacher = dbc.define('teacher', {
     teacher_id: {
         type: Sequelize.INTEGER,
@@ -28,7 +29,6 @@ const Teacher = dbc.define('teacher', {
     freezeTableName: true,
     timestamps: false
 })
-
 
 
 export default Teacher

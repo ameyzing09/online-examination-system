@@ -22,5 +22,4 @@ const Class = dbc.define('class', {
     freezeTableName: true
 })
 
-
 export default Class

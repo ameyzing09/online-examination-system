@@ -1,7 +1,7 @@
 import subjectMethod from '../methods/subjectMethod'
 
-async function getSubjectName(){
-    let subjectName = await subjectMethod.getSubject()
+async function getSubjectName() {
+    let subjectName = await subjectMethod.fetchAll()
     let responseSubjectName = []
 
     for(let i=0; i<subjectName.length; ++i){
@@ -13,4 +13,9 @@ async function getSubjectName(){
     return { subjectName: responseSubjectName }
 }
 
-export default { getSubjectName }
+async function getSubjectId(payload) {
+    const subjectId = await subjectMethod.fetchOne(payload)
+    return subjectId;
+}
+
+export default { getSubjectName, getSubjectId }

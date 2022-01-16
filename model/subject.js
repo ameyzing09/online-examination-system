@@ -1,6 +1,7 @@
 import Sequelize from 'sequelize'
 import dbc from '../database'
 
+
 const Subject = dbc.define('subject', {
     subject_id: {
         type: Sequelize.INTEGER,

@@ -1,9 +1,17 @@
+// Utility
 import { Op } from 'sequelize'
 import express from 'express'
 import cors from 'cors'
+
+// Database connection
 import dbc from './database'
+
+// Services
 import classServices from './services/classServices'
 import subjectServices from './services/subjectServices'
+import questionSetServices from './services/questionSetServices'
+
+// Models
 import studentModel from './model/student'
 import subjectModel from './model/subject'
 import classModel from './model/class'
@@ -189,6 +197,26 @@ app.delete('/admin/:id', async (req, res) => {
     }
 
     res.status(200).json(successResponse)
+})
+
+// Add question API
+app.post('/teacher/:id/addQuestion', async(req, res) => {
+    /*{
+        questionSetName: String,
+        subjectName: String,
+        classId: integer,
+        testQuestion: [{
+            question: String,
+            options: [{
+                option: String,
+                is_correct: boolean
+            }, ...]
+            multiAnswer: boolean
+        }]
+    }*/
+    const addedQuestion = await questionSetServices.addQuestionSet(req)
+    console.log("addedQuestion ", addedQuestion)
+    res.status(200).json(addedQuestion)
 })
 
 app.listen(process.env.PORT, ()=> console.log(`Server started at ${process.env.PORT}`))
