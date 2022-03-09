@@ -1,12 +1,12 @@
 import teachClassModel from '../model/teachClass'
-import teachSubClassModel from '../model/teachSubClass'
+import classModel from '../model/class'
 
 let teachClassMethod = {
     fetchAll: async(option) => {
         try{
-            return await teachSubClassModel.findAll({
+            return await teachClassModel.findAll({
                 where : option,
-                include: [ teachClassModel ]
+                include: [ classModel ]
             })
         } catch(err) {
             console.log("teachClassMethod.js || fetchAll : ", err)
@@ -15,7 +15,7 @@ let teachClassMethod = {
 
     fetchOne: async(option) => {
         try{
-            return await teachSubClassModel.findOne({
+            return await teachClassModel.findOne({
                 where: option
             })
         } catch(err) {
@@ -25,17 +25,24 @@ let teachClassMethod = {
 
     create: async(payload) => {
         try{
-            return await teachSubClassModel.create(payload)
+            return await teachClassModel.create({
+                where : payload
+            })
         } catch(err) {
             console.log("teachClassMethod.js || create : ", err)
         }
     },
 
-    upsert: async(payload, option) => {
+    bulkCreate: async(payload) => {
         try{
-            return await teachSubClassModel.upsert(payload, {
-                where: option
-            })
+            return await teachClassModel.bulkCreate(payload)
+        } catch(err) {
+            console.log("teachClassMethod.js || bulkCreate : ", err)
+        }
+    },
+    upsert: async(payload) => {
+        try{
+            return await teachClassModel.upsert(payload)
         } catch(err) {
             console.log("teachClassMethod.js || upsert : ", err)
         }

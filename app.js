@@ -16,7 +16,13 @@ import studentModel from './model/student'
 import subjectModel from './model/subject'
 import classModel from './model/class'
 import teacherModel from './model/teacher'
-import teacherSubClass from './model/teachSubClass'
+
+
+// Methods
+import teacherClassMethod from './methods/teachClassMethod'
+import teachSubClassMethod from './methods/teachSubClassMethod'
+import subjectMethod from './methods/subjectMethod'
+import classMethod from './methods/classMethod'
 
 let app = express()
 
@@ -98,35 +104,17 @@ app.post('/studentRegistration', async (req, res) => {
 })
 
 // Create teacher API
-app.post('/admin', async(req, res) => {
+app.post('/admin/addTeacher', async(req, res) => {
     let teacherUserId = req.body.fname.toLowerCase()+'.'+req.body.lname.toLowerCase()
     let teacherPassword = req.body.fname.toLowerCase()
     let teacherFname = req.body.fname
     let teacherLname = req.body.lname
-    let flag = true
-    if(req.body.subject.length != req.body.class.length)
-        flag = false
-
-    let subjectDetails
-    let subjectArray = []
-    if(flag){
-        for( let i in req.body.subject ) {
-            subjectArray.push(req.body.subject[i])
-        }
-        // select id from subject where subject_name='Java' or subject_name='Angular';
-        subjectDetails = await subjectModel.findAll({
-            attributes: [
-                'subject_id'
-            ],
-            where: {
-                subject_name: {
-                    [Op.or] : [...subjectArray]
-                }            
-            }
-        })
-    }
-    console.log('app.js || subjectDetails : ', subjectDetails)
-
+    let subjectDetails, subjectList = []
+    const { teachingDetails } = req.body
+    // for( let i in req.body.subject ) {
+    //     subjectArray.push(req.body.subject[i])
+    // }
+    // Inserting record in teacher table
     const [ teacher, created ] = await teacherModel.findOrCreate({
         where : {
             teacher_fname: teacherFname,
@@ -140,18 +128,50 @@ app.post('/admin', async(req, res) => {
 
     console.log('app.js || teacher id : ', teacher.dataValues.teacher_id)
 
-    let teacherData = []
+    let teacherClassData = []
+    for( let i=0; i<teachingDetails.length; ++i ){
+        teacherClassData.push({ 
+            "teacher_id": teacher.dataValues.teacher_id, 
+            "class_id": teachingDetails[i].classId
+        })
+        subjectList.push(teachingDetails[i].subjectName)
+    }
+    // select id from subject where subject_name='Java' or subject_name='Angular';
+    subjectDetails = await subjectModel.findAll({
+        attributes: [
+            'subject_id'
+        ],
+        where: {
+            subject_name: {
+                [Op.or] : [...subjectList]
+            }            
+        }
+    })
 
-    for( let i=0; i<subjectArray.length; ++i ){
-        teacherData.push({ 
-            "tsd_teacher_id": teacher.dataValues.teacher_id, 
-            "tsd_subject_id": subjectDetails[i].dataValues.subject_id,
-            "tsd_class_id": req.body.class[i]
+    // Inserting record in teacherClass table
+    await teacherClassMethod.bulkCreate(teacherClassData)
+
+    // Fetching teacherClass ID  for inserting into teachSubClass table
+    const teacherClassList = await teacherClassMethod.fetchAll({ [Op.or]: [ ...teacherClassData ] })
+    console.info('teacherList ', teacherClassList)
+    
+    const teacherClassIds = teacherClassList.map(({ id }) => {
+        console.info('teacherClassIds : ', id)
+        return id;
+    })
+
+    const subjectIds = subjectDetails.map(({ subject_id : id }) => {
+        console.info('subjectIds : ', id)
+        return id;
+    })
+
+    // Adding values to teachSubClass table
+    for(let i in teacherClassIds) {
+        await teachSubClassMethod.create({
+            teach_class_id: teacherClassIds[i],
+            subject_id: subjectIds[i]
         })
     }
-
-    console.log('app.js || teach_sub_class : ', ...teacherData)
-    teacherSubClass.bulkCreate(teacherData)
     let successResponse = {
         transaction: "success"
     }
@@ -163,7 +183,7 @@ app.get('/getTeacher', async (req, res) => {
     let teacherDetails = await teacherModel.findAll({
         attributes: [ 'teacher_id', 'teacher_fname', 'teacher_lname' ]
     })
-    console.log('app.js || /getTeacherDetails ', teacherDetails)
+    console.log('app.js || getTeacherDetails ', teacherDetails)
     res.status(200).json(teacherDetails)
 })
 
@@ -197,6 +217,18 @@ app.delete('/admin/:id', async (req, res) => {
     }
 
     res.status(200).json(successResponse)
+})
+
+app.post('/admin/addSubject', async (req, res) => {
+    let { subjectName } = req.body
+    const subjectId = await subjectMethod.create({ subject_name: subjectName })
+    res.status(200).json(subjectId)
+})
+
+app.post('/admin/addClass', async (req, res) => {
+    let { classStd, classDiv } = req.body
+    const classId = await classMethod.create({ class_std: classStd, class_div: classDiv })
+    res.status(200).json(classId)
 })
 
 // Add question API

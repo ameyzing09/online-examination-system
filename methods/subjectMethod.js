@@ -19,7 +19,15 @@ let subjectMethod = {
         } catch(err) {
             console.log("subjectMethod.js || fetchOne ", err)
          }
-    }
+    },
+
+    create: async(payload) => {
+        try{
+            return await subjectModel.create(payload)
+        } catch(err) {
+            console.log("subjectMethod.js || create : ", err)
+        }
+    },
 }
 
 export default subjectMethod

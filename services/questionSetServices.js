@@ -3,7 +3,7 @@ import questionMethod from "../methods/questionMethod"
 import answerMethod from "../methods/answerMethod"
 
 import subjectServices from '../services/subjectServices'
-import teachSubClassServices from '../services/teachSubClassServices'
+import teachClassServices from '../services/teachSubClassServices'
 
 async function addQuestionSet(req) {
     try {
@@ -11,10 +11,9 @@ async function addQuestionSet(req) {
             subject_name: req.body.subjectName
         })
         console.debug("subjectId ", subjectId)
-        const tsdId = await teachSubClassServices.getTeachSubClassId({
-            tsd_teacher_id: req.params.id,
-            tsd_subject_id: subjectId.dataValues.subject_id,
-            tsd_class_id: req.body.classId
+        const tsdId = await teachClassServices.getTeachClassId({
+            teacher_id: req.params.id,
+            class_id: req.body.classId
         })
         console.debug("tsdId : ", tsdId)
         const questionSet = await questionSetMethod.fetchOne({ question_set_name: req.body.questionSetName })
@@ -37,7 +36,7 @@ async function addQuestionSet(req) {
         }
         // console.debug('questionSetId : ', questionSetId)
         const questionSetAdded = await questionSetMethod.upsert(payload)                    
-              /*{
+    /*{
         questionSetName: String,
         subjectName: String,
         classId: integer,
@@ -47,6 +46,7 @@ async function addQuestionSet(req) {
                 option: String,
                 is_correct: boolean
             }, ...]
+            
         }]
     }*/
     const testQuestions = req.body.testQuestions
@@ -54,7 +54,7 @@ async function addQuestionSet(req) {
         const question = await questionMethod.create({ question: testQuestion.question, question_set_id: questionSetAdded[0].dataValues.question_set_id } )
         testQuestion.options.forEach(async questionOption => {
             questionOption.question_id = question.dataValues.question_id
-            console.debug('questionOption : ',questionOption)
+            console.debug('questionOption : ', questionOption)
             await answerMethod.create(questionOption)
         })
     })

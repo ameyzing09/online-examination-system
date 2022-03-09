@@ -1,12 +1,12 @@
-import teachSubClassMethod from "../methods/teachSubClassMethod"
+import teachClassMethod from "../methods/teachClassMethod"
 
-async function getTeachSubClassId(payload) {
+async function getTeachClassId(payload) {
     try {
-        const tsdId = await teachSubClassMethod.fetchOne(payload)
-        return tsdId.dataValues.tsd_id
+        const tsdId = await teachClassMethod.fetchOne(payload)
+        return tsdId.dataValues.id
     } catch (error) {
-        console.error("getTeachSubClassId || err ", err)
+        console.error("getTeachClassId || err ", err)
     }
 }
 
-export default { getTeachSubClassId }
+export default { getTeachClassId }

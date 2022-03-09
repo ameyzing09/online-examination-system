@@ -24,7 +24,15 @@ let classMethod = {
         } catch(err) {
             console.log("classMethod.js || error ", err)
          }
-    }
+    },
+
+    create: async(payload) => {
+        try{
+            return await classModel.create(payload)
+        } catch(err) {
+            console.log("classModel.js || create : ", err)
+        }
+    },
 }
 
 export default classMethod

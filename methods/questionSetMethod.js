@@ -1,11 +1,5 @@
 import questionSetModel from '../model/questionSet'
-import teachSubClassModel from '../model/teachSubClass'
-
-teachSubClassModel.hasMany(questionSetModel, {
-    as: 'teach_sub_class',
-    sourceKey: 'tsd_id',
-    foreignKey: 'tsd_id'
-})
+// import teachSubClassModel from '../model/teachSubClass'
 
 let questionSetMethod = {
     fetchOne: async(option) => {
